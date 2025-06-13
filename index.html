@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fake Location Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- UI Buttons -->
+  <button class="toggle-btn" id="search-toggle"><img src="assets/search-icon.svg" alt="Search" /></button>
+  <button class="toggle-btn" id="location-toggle"><img src="assets/location-icon.svg" alt="My Location" /></button>
+  <button class="toggle-btn" id="direction-toggle"><img src="assets/direction-icon.svg" alt="Direction" /></button>
+
+  <!-- Search Panel -->
+  <div class="panel" id="search-panel">
+    <button class="close-btn" onclick="hidePanel('search-panel')"><img src="assets/close-icon.svg" alt="Close" /></button>
+    <input type="text" id="searchBox" placeholder="Search place..." autocomplete="off" />
+    <div id="searchSuggestions" class="suggestions"></div>
+    <button class="search-btn" onclick="searchPlace()">Search</button>
+  </div>
+
+  <!-- Direction Panel -->
+  <div class="panel" id="direction-panel">
+    <button class="close-btn" onclick="hidePanel('direction-panel')"><img src="assets/close-icon.svg" alt="Close" /></button>
+    <input type="text" id="start" placeholder="Start (e.g. My Location)" autocomplete="off" />
+    <div id="startSuggestions" class="suggestions"></div>
+    <input type="text" id="end" placeholder="Destination" autocomplete="off" />
+    <div id="endSuggestions" class="suggestions"></div>
+    <button class="search-btn" onclick="getDirections()">Get Direction</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
