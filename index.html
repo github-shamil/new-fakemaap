@@ -11,18 +11,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 </head>
 <body>
-  <!-- Password Overlay -->
-  <div id="password-overlay">
-    <div class="password-box">
-      <h3>Enter Password</h3>
-      <input type="password" id="password-input" placeholder="Enter password"/>
-      <button onclick="checkPassword()">Submit</button>
-    </div>
-  </div>
+  <div id="map"></div>
 
-  <div id="map" style="display:none;"></div>
-
-  <!-- Floating Buttons -->
+  <!-- UI Buttons -->
   <button class="toggle-btn" id="search-toggle"><img src="assets/search-icon.svg" alt="Search" /></button>
   <button class="toggle-btn" id="location-toggle"><img src="assets/location-icon.svg" alt="My Location" /></button>
   <button class="toggle-btn" id="direction-toggle"><img src="assets/direction-icon.svg" alt="Direction" /></button>
@@ -38,7 +29,7 @@
   <!-- Direction Panel -->
   <div class="panel" id="direction-panel">
     <button class="close-btn" onclick="hidePanel('direction-panel')"><img src="assets/close-icon.svg" alt="Close" /></button>
-    <input type="text" id="start" placeholder="Start (or type 'My Location')" autocomplete="off" />
+    <input type="text" id="start" placeholder="Start (e.g. My Location)" autocomplete="off" />
     <div id="startSuggestions" class="suggestions"></div>
     <input type="text" id="end" placeholder="Destination" autocomplete="off" />
     <div id="endSuggestions" class="suggestions"></div>
@@ -49,20 +40,8 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
   <script src="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.min.js"></script>
-  <script>
-    function checkPassword() {
-      const input = document.getElementById("password-input").value;
-      if (input === "8590") {
-        document.getElementById("password-overlay").style.display = "none";
-        document.getElementById("map").style.display = "block";
-        const script = document.createElement("script");
-        script.src = "script.js";
-        document.body.appendChild(script);
-      } else {
-        alert("Incorrect password. Try again.");
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
