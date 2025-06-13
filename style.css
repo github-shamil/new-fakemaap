@@ -1,0 +1,124 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.toggle-btn {
+  position: fixed;
+  right: 15px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 999;
+  padding: 8px;
+}
+
+#search-toggle {
+  top: 45%;
+  transform: translateY(-50%);
+}
+#location-toggle {
+  bottom: 110px;
+}
+#direction-toggle {
+  bottom: 50px;
+}
+
+.toggle-btn img {
+  width: 100%;
+  height: auto;
+}
+
+.panel {
+  position: fixed;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+}
+
+#search-panel {
+  top: 40%;
+  right: 75px;
+  transform: translateY(-50%);
+  display: none;
+}
+#direction-panel {
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.search-btn {
+  padding: 8px;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.close-btn img {
+  width: 20px;
+}
+
+.suggestions {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  font-size: 14px;
+  z-index: 1000;
+}
+
+.suggestion {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.suggestion:hover {
+  background: #f0f0f0;
+}
+
+/* Responsive improvements */
+@media (max-width: 600px) {
+  .panel {
+    width: 90%;
+    left: 5%;
+    right: 5%;
+  }
+}
