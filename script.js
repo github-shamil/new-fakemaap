@@ -1,120 +1,156 @@
-// Full advanced, premium-level script.js
-let map = L.map("map").setView([25.276987, 51.520008], 13);
-let fakeMarker, liveMarker, routingControl;
+let map, fakeMarker, routeControl;
+let myLocation = null;
 
-// MapTiler with ENGLISH labels (no Arabic)
-L.tileLayer("https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=VcSgtSTkXfCbU3n3RqBO", {
-  attribution: '&copy; <a href="https://www.maptiler.com/">MapTiler</a>',
-  maxZoom: 20
-}).addTo(map);
+// Initialize map after password unlock
+function initMap() {
+  map = L.map('map').setView([25.276987, 55.296249], 13); // Qatar (fake)
 
-// Add fake Qatar marker
-fakeMarker = L.marker([25.276987, 51.520008], {
-  icon: L.icon({ iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/blue.png' })
-}).addTo(map);
+  // MapTiler tiles with English labels
+  L.tileLayer('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=YOUR_MAPTILER_KEY', {
+    attribution: '',
+    tileSize: 256
+  }).addTo(map);
 
-fakeMarker.on("dblclick", () => map.removeLayer(fakeMarker));
+  fakeMarker = L.marker([25.276987, 55.296249], { draggable: false }).addTo(map);
+  map.on('dblclick', () => map.removeLayer(fakeMarker));
 
+  setupSearch();
+  setupDirectionAutocomplete();
+  getLiveLocation(); // preload live location
+}
+
+// Toggle panels
 document.getElementById("search-toggle").onclick = () => togglePanel("search-panel");
 document.getElementById("direction-toggle").onclick = () => togglePanel("direction-panel");
-document.getElementById("location-toggle").onclick = () => {
-  navigator.geolocation.getCurrentPosition(showLiveLocation, () => alert("Location access denied"));
-};
+document.getElementById("location-toggle").onclick = getLiveLocation;
 
 function togglePanel(id) {
-  const panel = document.getElementById(id);
-  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  document.getElementById("search-panel").style.display = "none";
+  document.getElementById("direction-panel").style.display = "none";
+  document.getElementById(id).style.display = "block";
 }
 function hidePanel(id) {
   document.getElementById(id).style.display = "none";
 }
 
-function enableAutocomplete(inputId, suggestionId) {
-  const input = document.getElementById(inputId);
-  const suggestionBox = document.getElementById(suggestionId);
-
-  input.addEventListener("input", () => {
-    const query = input.value.trim();
-    if (!query) return (suggestionBox.innerHTML = "");
-
-    L.esri.Geocoding.geocode().text(query).language("en").run((err, results) => {
-      if (err || !results.results.length) return;
-      suggestionBox.innerHTML = "";
-      results.results.forEach(r => {
-        const div = document.createElement("div");
-        div.className = "suggestion";
-        div.textContent = r.text;
-        div.onclick = () => {
-          input.value = r.text;
-          suggestionBox.innerHTML = "";
-        };
-        suggestionBox.appendChild(div);
-      });
-    });
-  });
+// Autocomplete using Mapbox Geocoding
+async function fetchSuggestions(query) {
+  const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=pk.eyJ1IjoiZGVtb3VzZXIiLCJhIjoiY2tzcHRmOHd2MDY5bTMxcGJpazExZjBkaSJ9.PtEyT0MDGHeOS1aNq6xOZQ&language=en`);
+  const data = await res.json();
+  return data.features || [];
 }
 
-enableAutocomplete("searchBox", "searchSuggestions");
-enableAutocomplete("start", "startSuggestions");
-enableAutocomplete("end", "endSuggestions");
+function setupSearch() {
+  const box = document.getElementById("searchBox");
+  const suggestDiv = document.getElementById("searchSuggestions");
 
-function searchPlace() {
-  const query = document.getElementById("searchBox").value.trim();
-  if (!query) return;
-  L.esri.Geocoding.geocode().text(query).language("en").run((err, res) => {
-    if (!res.results.length) return;
-    const latlng = res.results[0].latlng;
-    if (fakeMarker) map.removeLayer(fakeMarker);
-    fakeMarker = L.marker(latlng, {
-      icon: L.icon({ iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/red.png' })
-    }).addTo(map);
-    map.setView(latlng, 14);
-  });
-}
-
-function getDirections() {
-  const start = document.getElementById("start").value.trim();
-  const end = document.getElementById("end").value.trim();
-  if (!start || !end) return;
-
-  if (routingControl) map.removeControl(routingControl);
-
-  const resolve = (place) => {
-    return new Promise((resolve) => {
-      if (place.toLowerCase() === "my current location" && liveMarker) {
-        resolve(liveMarker.getLatLng());
-      } else {
-        L.esri.Geocoding.geocode().text(place).language("en").run((err, res) => {
-          if (!res.results.length) return resolve(null);
-          resolve(res.results[0].latlng);
-        });
-      }
+  box.oninput = async () => {
+    suggestDiv.innerHTML = "";
+    const suggestions = await fetchSuggestions(box.value);
+    suggestions.forEach(place => {
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.textContent = place.place_name;
+      div.onclick = () => {
+        box.value = place.place_name;
+        suggestDiv.innerHTML = "";
+        setSearchMarker(place.center);
+      };
+      suggestDiv.appendChild(div);
     });
   };
+}
 
-  Promise.all([resolve(start), resolve(end)]).then(([startLatLng, endLatLng]) => {
-    if (!startLatLng || !endLatLng) return alert("Could not find one of the locations.");
+function setSearchMarker([lng, lat]) {
+  if (fakeMarker) fakeMarker.setLatLng([lat, lng]);
+  else fakeMarker = L.marker([lat, lng]).addTo(map);
+  map.setView([lat, lng], 15);
+}
 
-    routingControl = L.Routing.control({
-      waypoints: [startLatLng, endLatLng],
-      routeWhileDragging: false,
-      createMarker: (i, wp) => {
-        return L.marker(wp.latLng, {
-          icon: L.icon({
-            iconUrl: i === 0 ? "assets/live-location.svg" : "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",
-            iconSize: [32, 32]
-          })
-        });
-      }
-    }).addTo(map);
+// Search button handler
+async function searchPlace() {
+  const query = document.getElementById("searchBox").value;
+  const results = await fetchSuggestions(query);
+  if (results[0]) setSearchMarker(results[0].center);
+}
+
+// Direction autocomplete for both fields
+function setupDirectionAutocomplete() {
+  const start = document.getElementById("start");
+  const end = document.getElementById("end");
+
+  attachAutocomplete(start, "startSuggestions");
+  attachAutocomplete(end, "endSuggestions");
+}
+
+function attachAutocomplete(input, suggestionBoxId) {
+  const box = document.getElementById(suggestionBoxId);
+  input.oninput = async () => {
+    box.innerHTML = "";
+    const suggestions = await fetchSuggestions(input.value);
+    suggestions.forEach(place => {
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.textContent = place.place_name;
+      div.onclick = () => {
+        input.value = place.place_name;
+        box.innerHTML = "";
+      };
+      box.appendChild(div);
+    });
+  };
+}
+
+// Get direction from start to end
+async function getDirections() {
+  const startVal = document.getElementById("start").value;
+  const endVal = document.getElementById("end").value;
+
+  if (!startVal || !endVal) return alert("Enter both locations.");
+
+  const startCoords = startVal.toLowerCase().includes("my location") && myLocation
+    ? [myLocation.lng, myLocation.lat]
+    : (await fetchSuggestions(startVal))[0]?.center;
+
+  const endCoords = (await fetchSuggestions(endVal))[0]?.center;
+
+  if (!startCoords || !endCoords) return alert("Couldn't find one of the locations.");
+
+  if (routeControl) map.removeControl(routeControl);
+  routeControl = L.Routing.control({
+    waypoints: [
+      L.latLng(startCoords[1], startCoords[0]),
+      L.latLng(endCoords[1], endCoords[0])
+    ],
+    routeWhileDragging: false,
+    show: false,
+    createMarker: () => null
+  }).addTo(map);
+
+  map.setView([startCoords[1], startCoords[0]], 12);
+}
+
+// Live GPS location
+function getLiveLocation() {
+  if (!navigator.geolocation) return alert("GPS not supported.");
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    myLocation = { lat: latitude, lng: longitude };
+
+    L.circleMarker([latitude, longitude], {
+      radius: 10,
+      color: "#007bff",
+      fillColor: "#007bff",
+      fillOpacity: 0.6
+    }).addTo(map).bindPopup("You are here").openPopup();
+
+    map.setView([latitude, longitude], 15);
+  }, () => {
+    alert("Permission denied.");
   });
 }
 
-function showLiveLocation(position) {
-  const coords = [position.coords.latitude, position.coords.longitude];
-  if (liveMarker) map.removeLayer(liveMarker);
-  liveMarker = L.marker(coords, {
-    icon: L.icon({ iconUrl: "assets/live-location.svg", iconSize: [32, 32] })
-  }).addTo(map);
-  map.setView(coords, 15);
-}
+// Start map after password
+window.addEventListener("load", () => {
+  if (document.getElementById("password-overlay").style.display === "none") initMap();
+});
