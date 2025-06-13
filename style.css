@@ -1,3 +1,4 @@
+/* General Styles */
 body, html {
   margin: 0;
   padding: 0;
@@ -10,6 +11,7 @@ body, html {
   width: 100%;
 }
 
+/* Floating Buttons */
 .toggle-btn {
   position: fixed;
   right: 15px;
@@ -23,23 +25,16 @@ body, html {
   z-index: 999;
   padding: 8px;
 }
-
-#search-toggle {
-  top: 45%;
-  transform: translateY(-50%);
-}
-#location-toggle {
-  bottom: 110px;
-}
-#direction-toggle {
-  bottom: 50px;
-}
+#search-toggle { top: 45%; transform: translateY(-50%); }
+#location-toggle { bottom: 110px; }
+#direction-toggle { bottom: 50px; }
 
 .toggle-btn img {
   width: 100%;
   height: auto;
 }
 
+/* Panels */
 .panel {
   position: fixed;
   background: white;
@@ -66,14 +61,18 @@ body, html {
   display: none;
 }
 
-input[type="text"] {
+/* Inputs & Buttons */
+input[type="text"],
+input[type="password"] {
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  width: 100%;
 }
 
-.search-btn {
+.search-btn,
+button[type="submit"] {
   padding: 8px;
   background-color: #1976d2;
   color: white;
@@ -91,11 +90,11 @@ input[type="text"] {
   border: none;
   cursor: pointer;
 }
-
 .close-btn img {
   width: 20px;
 }
 
+/* Suggestions */
 .suggestions {
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -105,7 +104,6 @@ input[type="text"] {
   font-size: 14px;
   z-index: 1000;
 }
-
 .suggestion {
   padding: 6px 10px;
   cursor: pointer;
@@ -114,11 +112,33 @@ input[type="text"] {
   background: #f0f0f0;
 }
 
-/* Responsive improvements */
-@media (max-width: 600px) {
-  .panel {
-    width: 90%;
-    left: 5%;
-    right: 5%;
-  }
+/* Password Overlay */
+#password-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.password-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 90%;
+  max-width: 300px;
+}
+.password-box h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
 }
