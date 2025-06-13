@@ -1,12 +1,12 @@
 let map, fakeMarker, routeControl;
 let myLocation = null;
 
-// Initialize map after password unlock
-function initMap() {
-  map = L.map('map').setView([25.276987, 55.296249], 13); // Qatar (fake)
+window.onload = initMap; // Directly load map, no password
 
-  // MapTiler tiles with English labels
-  L.tileLayer('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=VcSgtSTkXfCbU3n3RqBO', {
+function initMap() {
+  map = L.map('map').setView([25.276987, 55.296249], 13); // Fake: Qatar
+
+  L.tileLayer('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=YOUR_MAPTILER_KEY', {
     attribution: '',
     tileSize: 256
   }).addTo(map);
@@ -16,10 +16,10 @@ function initMap() {
 
   setupSearch();
   setupDirectionAutocomplete();
-  getLiveLocation(); // preload live location
+  getLiveLocation(); // preload GPS
 }
 
-// Toggle panels
+// UI toggles
 document.getElementById("search-toggle").onclick = () => togglePanel("search-panel");
 document.getElementById("direction-toggle").onclick = () => togglePanel("direction-panel");
 document.getElementById("location-toggle").onclick = getLiveLocation;
@@ -29,11 +29,12 @@ function togglePanel(id) {
   document.getElementById("direction-panel").style.display = "none";
   document.getElementById(id).style.display = "block";
 }
+
 function hidePanel(id) {
   document.getElementById(id).style.display = "none";
 }
 
-// Autocomplete using Mapbox Geocoding
+// Suggestions
 async function fetchSuggestions(query) {
   const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=pk.eyJ1IjoiZGVtb3VzZXIiLCJhIjoiY2tzcHRmOHd2MDY5bTMxcGJpazExZjBkaSJ9.PtEyT0MDGHeOS1aNq6xOZQ&language=en`);
   const data = await res.json();
@@ -67,14 +68,12 @@ function setSearchMarker([lng, lat]) {
   map.setView([lat, lng], 15);
 }
 
-// Search button handler
 async function searchPlace() {
   const query = document.getElementById("searchBox").value;
   const results = await fetchSuggestions(query);
   if (results[0]) setSearchMarker(results[0].center);
 }
 
-// Direction autocomplete for both fields
 function setupDirectionAutocomplete() {
   const start = document.getElementById("start");
   const end = document.getElementById("end");
@@ -101,7 +100,6 @@ function attachAutocomplete(input, suggestionBoxId) {
   };
 }
 
-// Get direction from start to end
 async function getDirections() {
   const startVal = document.getElementById("start").value;
   const endVal = document.getElementById("end").value;
@@ -130,7 +128,6 @@ async function getDirections() {
   map.setView([startCoords[1], startCoords[0]], 12);
 }
 
-// Live GPS location
 function getLiveLocation() {
   if (!navigator.geolocation) return alert("GPS not supported.");
   navigator.geolocation.getCurrentPosition(pos => {
@@ -149,8 +146,3 @@ function getLiveLocation() {
     alert("Permission denied.");
   });
 }
-
-// Start map after password
-window.addEventListener("load", () => {
-  if (document.getElementById("password-overlay").style.display === "none") initMap();
-});
