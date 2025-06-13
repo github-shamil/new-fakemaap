@@ -6,7 +6,7 @@ window.onload = initMap; // Directly load map, no password
 function initMap() {
   map = L.map('map').setView([25.276987, 55.296249], 13); // Fake: Qatar
 
-  L.tileLayer('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=YOUR_MAPTILER_KEY', {
+  L.tileLayer('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=VcSgtSTkXfCbU3n3RqBO', {
     attribution: '',
     tileSize: 256
   }).addTo(map);
