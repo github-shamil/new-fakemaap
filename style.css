@@ -1,66 +1,136 @@
+/* 🌍 General Layout */
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
+
 #map {
   height: 100%;
   width: 100%;
+  z-index: 1;
 }
-.toggle-btn {
+
+/* 🔍 Floating Search Bar */
+.floating-search {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 8px 15px;
+  z-index: 1001;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.floating-search input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 250px;
+}
+
+.floating-search .search-btn {
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ⚙️ Floating Buttons */
+.floating-buttons {
   position: fixed;
   right: 15px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1001;
+}
+
+.toggle-btn {
   width: 48px;
   height: 48px;
   border: none;
-  background: white;
   border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px;
 }
-#search-toggle { top: 45%; transform: translateY(-50%); }
-#location-toggle { bottom: 110px; }
-#direction-toggle { bottom: 50px; }
-.toggle-btn img { width: 100%; height: auto; }
 
+.toggle-btn img {
+  width: 100%;
+  height: auto;
+}
+
+/* 🧭 Panel Styling */
 .panel {
   position: fixed;
   background: white;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  padding: 15px;
-  z-index: 1000;
+  padding: 20px;
+  z-index: 1001;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 280px;
+  width: 300px;
 }
 
-#search-panel {
-  top: 40%;
-  right: 75px;
-  transform: translateY(-50%);
-  display: none;
-}
+/* 📱 Responsive and smart direction panel (same place as search bar) */
 #direction-panel {
-  top: 20px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
   display: none;
+  width: 320px;
+  max-width: 90%;
+  z-index: 1001;
 }
 
+/* 📱 Responsive history panel for mobile */
+@media (max-width: 768px) {
+  #direction-panel {
+    width: 90%;
+    top: 70px;
+  }
+
+  #history-panel {
+    width: 85%;
+    right: 8%;
+    top: 100px;
+  }
+
+  #historyList li {
+    font-size: 13px;
+    padding: 6px;
+  }
+}
+
+
 input[type="text"] {
-  padding: 8px;
+  padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  width: 100%;
 }
 
 .search-btn {
-  padding: 8px;
+  padding: 10px;
   background-color: #1976d2;
   color: white;
   font-weight: bold;
@@ -71,14 +141,18 @@ input[type="text"] {
 
 .close-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 10px;
   background: transparent;
   border: none;
   cursor: pointer;
 }
-.close-btn img { width: 20px; }
 
+.close-btn img {
+  width: 20px;
+}
+
+/* 🔽 Autocomplete Suggestions */
 .suggestions {
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -86,12 +160,117 @@ input[type="text"] {
   overflow-y: auto;
   background: white;
   font-size: 14px;
-  z-index: 1000;
+  z-index: 1002;
+  position: relative;
 }
+
 .suggestion {
-  padding: 6px 10px;
+  padding: 12px 16px;
+  font-size: 16px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
+
 .suggestion:hover {
   background: #f0f0f0;
+}
+
+/* 📋 History */
+#historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#historyList li {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* 🌗 Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: white;
+}
+
+body.dark-mode .panel,
+body.dark-mode .floating-search,
+body.dark-mode .toggle-btn {
+  background: #1e1e1e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .suggestion:hover {
+  background: #333;
+}
+/* 🚦 Traffic & Weather Buttons */
+.floating-buttons .traffic-btn,
+.floating-buttons .weather-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  transition: background 0.3s ease;
+}
+
+.floating-buttons .traffic-btn.active {
+  background-color: #ff5252;
+}
+
+.floating-buttons .weather-btn.active {
+  background-color: #29b6f6;
+}
+
+.floating-buttons .traffic-btn img,
+.floating-buttons .weather-btn img {
+  width: 100%;
+  height: auto;
+}
+
+/* ☁️ Weather Info Box */
+#weather-box {
+  position: fixed;
+  bottom: 80px;
+  right: 75px;
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  z-index: 1002;
+  display: none;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#weather-box .title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#weather-box .temp {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+#weather-box .condition {
+  text-transform: capitalize;
+  margin-bottom: 4px;
+}
+
+body.dark-mode #weather-box {
+  background: #1e1e1e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
